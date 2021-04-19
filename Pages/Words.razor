@@ -1,9 +1,40 @@
 ﻿@page "/readwords"
+@using GeneticSharp.Domain.Selections
+@using GeneticSharp.Domain.Crossovers
+@using GeneticSharp.Domain.Mutations
+@using GeneticSharp.Domain.Populations
+@using GeneticSharp.Domain
+@using GeneticSharp.Domain.Terminations
+@using GeneticAlgorithmWords.GA
 
 <h1>Words</h1>
+@{
+    Main();
+};
 
 
 @code {
 
+    void Main()
+    {
+        var target = "ola";
+        var selection = new EliteSelection();
+        var crossover = new ThreeParentCrossover();
+        var mutation = new ReverseSequenceMutation();
+        var fitness = new MyFitness { Target = target };
+        var chromosome = new Chromosome(target);
+        var population = new Population(500, 1000, chromosome);
 
+        var ga = new GeneticAlgorithm(population, fitness, selection, crossover, mutation);
+        ga.Termination = new GenerationNumberTermination(300);
+
+        Console.WriteLine("GA running...");
+        ga.Start();
+        var count = 0;
+        Console.WriteLine("Best solution found has {0} fitness.", ga.BestChromosome.Fitness);
+        foreach (var genes in ga.BestChromosome.GetGenes())
+        {
+            Console.WriteLine(genes.Value + " Gene  : " + count++);
+        }
+    }
 }
