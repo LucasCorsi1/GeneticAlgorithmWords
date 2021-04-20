@@ -1,8 +1,6 @@
-﻿using System;
-using System.Threading;
-
-using GeneticSharp.Domain.Chromosomes;
+﻿using GeneticSharp.Domain.Chromosomes;
 using GeneticSharp.Domain.Fitnesses;
+using System;
 
 namespace GeneticAlgorithmWords.GA
 {
@@ -20,7 +18,7 @@ namespace GeneticAlgorithmWords.GA
 
             foreach (var gene in genes)
             {
-                CurrentTarget += gene.Value.ToString();
+                CurrentTarget = gene.Value.ToString();
                 if (Convert.ToChar(gene.Value) == characteresTarget[count++])
                     fitness++;
             }
