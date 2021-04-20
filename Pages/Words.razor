@@ -7,17 +7,59 @@
 @using GeneticSharp.Domain.Terminations
 @using GeneticAlgorithmWords.GA
 
-<h1>Words</h1>
-@{
-    Main();
-};
+
+<style>
+    .inputTarget {
+        width: 100%;
+        padding: 10px 15px;
+        margin-right: 20px;
+        border-radius: 4px;
+        border: 1px solid #a2a2a2;
+        outline-color: #4fa2ff;
+    }
+
+    .btnExecute {
+        border: none;
+        background: #4fa2ff;
+        color: #fff;
+        border-radius: 4px;
+        padding: 10px 20px;
+        font-weight: 600;
+        outline-color: #4fa2ff;
+    }
+
+    .textAreaContent {
+        flex: 1;
+        margin-top: 20px;
+        border-radius: 4px;
+        border: 1px solid #a2a2a2;
+        outline-color: #4fa2ff;
+        padding: 20px 25px;
+    }
+</style>
+
+<div style="display:flex; flex-direction: column;">
+    <h1>Interpretador de Palavras</h1>
+    <div style="display: flex; flex: 1;  margin-top: 20px">
+        <input class="inputTarget" id="targeet" placeholder="Digite uma frase..." @bind="Target" />
+        <button class="btnExecute" @onclick="Main">Executar</button>
+    </div>
+    <textarea rows="10" @bind="CurrentTarget" class="textAreaContent" />
+</div>
+
 
 
 @code {
 
-    void Main()
+    private string Target { get; set; }
+
+    private string CurrentTarget { get; set; }
+
+    protected void Main()
     {
-        var target = "ola";
+
+        Console.WriteLine(Target);
+        var target = Target;
         var selection = new EliteSelection();
         var crossover = new ThreeParentCrossover();
         var mutation = new ReverseSequenceMutation();
@@ -30,11 +72,19 @@
 
         Console.WriteLine("GA running...");
         ga.Start();
-        var count = 0;
-        Console.WriteLine("Best solution found has {0} fitness.", ga.BestChromosome.Fitness);
+
+        InvokeAsync(() =>
+        {
+            CurrentTarget += fitness.CurrentTarget;
+            StateHasChanged();
+        });
+
+        CurrentTarget += "\nBest solution found has fitness." + ga.BestChromosome.Fitness;
+        CurrentTarget += "\n";
+
         foreach (var genes in ga.BestChromosome.GetGenes())
         {
-            Console.WriteLine(genes.Value + " Gene  : " + count++);
+            CurrentTarget += genes.Value;
         }
     }
 }
