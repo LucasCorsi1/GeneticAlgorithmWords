@@ -6,6 +6,7 @@ using GeneticSharp.Domain.Chromosomes;
 using GeneticSharp.Domain.Crossovers;
 using GeneticSharp.Domain.Mutations;
 using GeneticSharp.Domain.Populations;
+using GeneticSharp.Domain.Reinsertions;
 using GeneticSharp.Domain.Selections;
 using GeneticSharp.Domain.Terminations;
 
@@ -39,7 +40,8 @@ namespace GeneticAlgorithmWords.GA
 
             _ga = new GeneticAlgorithm(population, fitness, selection, crossover, mutation)
             {
-                Termination = new GenerationNumberTermination(300)
+                Termination = new GenerationNumberTermination(300),
+                MutationProbability = float.MaxValue
             };
             _timer = new Timer(new TimerCallback(_ =>
             {
@@ -54,7 +56,10 @@ namespace GeneticAlgorithmWords.GA
                 {
                     teste += _ga.BestChromosome.GetGenes()[i].Value;
                     if (teste == target)
+                    {
                         Stop();
+                        _stopwatch.Stop();
+                    }
                 }
                 StateHasChanged?.Invoke();
             }), null, 0, 1);
