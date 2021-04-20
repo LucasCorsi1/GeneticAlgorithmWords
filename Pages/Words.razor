@@ -1,8 +1,6 @@
 ﻿@page "/readwords"
 @using GeneticAlgorithmWords.GA
-@using System.Timers
-@using GeneticSharp.Domain
-
+@inject IJSRuntime JsRuntime
 
 <style>
     .inputTarget {
@@ -46,24 +44,35 @@
         <button class="btnExecute" @onclick="Main">Executar</button>
     </div>
     <div class=" fitness-grid">
-        <p>⬥ Gen: @GeneticAlgo?.GenerationsNumber </p>
+        <p>⬥ Geração: @GeneticAlgo?.GenerationsNumber </p>
         <p>⬥ Fitness: @GeneticAlgo?.Fitness </p>
         <p>⬥ Tempo:  @GeneticAlgo?.Counter</p>
+        @{
+            if (GeneticAlgo?.Genes != null)
+                foreach (var gene in GeneticAlgo?.Genes)
+                {
+                    Current += gene.Value.ToString();
+                    CurrentTextArea += gene.Value.ToString();
+                    if (Current.Length == Target.Length)
+                    {
+                        Current += "\r\n";
+                        CurrentTextArea += "\r\n";
+                    }
+                }
+            <p>⬥ Melhor Cromossomo:  @Current</p>
+        }
     </div>
+    <textarea rows="10" @bind="CurrentTextArea" class="textAreaContent" scrollTop ="scrollHeight" ></textarea>
+    @{ Current = string.Empty; }
 </div>
-
 
 
 @code {
     private string Target { get; set; }
-
+    private string Current { get; set; }
+    private string CurrentTextArea { get; set; }
     private GeneticAlgorithmWords GeneticAlgo;
-
-    private async Task Main()
-    {
-        await Run();
-    }
-
+    private async Task Main() => await Run();
     private async Task Run()
     {
         GeneticAlgo = new GeneticAlgorithmWords();
