@@ -21,8 +21,7 @@ namespace GeneticAlgorithmWords.GA
         private Timer _timer;
 
         private Stopwatch _stopwatch;
-        private bool IsRunning => _timer != null;
-
+        public bool IsRunning => _timer != null;
         public double Fitness => _ga != null && _ga.BestChromosome?.Fitness != null ? _ga.BestChromosome.Fitness.Value : 0;
         public int GenerationsNumber => _ga != null ? _ga.GenerationsNumber : 0;
         public Gene[] Genes => _ga?.BestChromosome?.GetGenes();

@@ -2,51 +2,59 @@
 @using GeneticAlgorithmWords.GA
 @inject IJSRuntime JsRuntime
 
-<style>
-    .inputTarget {
-        width: 100%;
-        padding: 10px 15px;
-        margin-right: 20px;
-        border-radius: 4px;
-        border: 1px solid #a2a2a2;
-        outline-color: #4fa2ff;
-    }
 
-    .btnExecute {
-        border: none;
-        background: #4fa2ff;
-        color: #fff;
-        border-radius: 4px;
-        padding: 10px 20px;
-        font-weight: 600;
-        outline-color: #4fa2ff;
-    }
+<div class="container">
+    <h2>Interpretador de Palavras</h2>
 
-    .textAreaContent {
-        flex: 1;
-        margin-top: 20px;
-        border-radius: 4px;
-        border: 1px solid #a2a2a2;
-        outline-color: #4fa2ff;
-        padding: 20px 25px;
-    }
+    <div class="alert alert-secondary mt-4 mb-5" role="alert">
+        <span class="oi oi-pencil mr-2" aria-hidden="true"></span>
+        <strong>Task</strong>
 
-    .fitness-grid {
-        font-size: 30px;
-        font-weight: bold;
-    }
-</style>
-
-<div style="display:flex; flex-direction: column;">
-    <h1>Interpretador de Palavras</h1>
-    <div style="display: flex; flex: 1;  margin-top: 20px">
-        <input class="inputTarget" id="targeet" placeholder="Digite uma frase..." @bind="Target" />
-        <button class="btnExecute" @onclick="Main">Executar</button>
+        <span class="text-nowrap ml-1">
+            A partir de um texto informado, o objetivo é fazer a IA recriar esse texto através de um algoritmo genético.
+        </span>
     </div>
-    <div class=" fitness-grid">
-        <p>⬥ Geração: @GeneticAlgo?.GenerationsNumber </p>
-        <p>⬥ Fitness: @GeneticAlgo?.Fitness </p>
-        <p>⬥ Tempo:  @GeneticAlgo?.Counter</p>
+
+    <div class="input-group mb-4 mt-5">
+        <input type="text" class="form-control" placeholder="Digite uma frase..." aria-label="Digite uma frase..." @bind="Target">
+        <div class="input-group-append">
+            <button class="btn btn-outline-primary" type="button" id="btnExecute" @onclick="Main">Executar</button>
+        </div>
+    </div>
+
+    @{
+        if (GeneticAlgo != null && GeneticAlgo.IsRunning)
+        {
+            <div class="w-100 d-flex justify-content-center my-3">
+                <div class="spinner-grow text-primary" role="status">
+                    <span class="visually-hidden" />
+                </div>
+                <div class="spinner-grow text-primary" role="status">
+                    <span class="visually-hidden" />
+                </div>
+                <div class="spinner-grow text-primary" role="status">
+                    <span class="visually-hidden" />
+                </div>
+            </div>
+        }
+    }
+
+    <div class="form-group mt-3">
+        <label class="fw-bold" for="textAreaResult">Resultados</label>
+        <textarea readonly class="form-control" id="textAreaResult" rows="10" @bind="CurrentTextArea" />
+        @{ Current = string.Empty; }
+    </div>
+
+    <ul class="list-group">
+        <li class="list-group-item">
+            ⬥ Geração: <span class="text-primary">@GeneticAlgo?.GenerationsNumber</span>
+        </li>
+        <li class="list-group-item">
+            ⬥ Fitness: <span class="text-primary">@GeneticAlgo?.Fitness</span>
+        </li>
+        <li class="list-group-item">
+            ⬥ Tempo: <span class="text-primary">@GeneticAlgo?.Counter</span>
+        </li>
         @{
             if (GeneticAlgo?.Genes != null)
                 foreach (var gene in GeneticAlgo?.Genes)
@@ -59,12 +67,16 @@
                         CurrentTextArea += "\r\n";
                     }
                 }
-            <p>⬥ Melhor Cromossomo:  @Current</p>
+
+            <li class="list-group-item">
+                ⬥ Melhor Cromossomo: <span class="text-primary">@Current</span>
+            </li>
         }
-    </div>
-    <textarea rows="10" @bind="CurrentTextArea" class="textAreaContent" scrollTop ="scrollHeight" ></textarea>
-    @{ Current = string.Empty; }
+
+    </ul>
 </div>
+
+
 
 
 @code {
@@ -75,6 +87,8 @@
     private async Task Main() => await Run();
     private async Task Run()
     {
+        CurrentTextArea = "";
+        Current = "";
         GeneticAlgo = new GeneticAlgorithmWords();
         GeneticAlgo.StateHasChanged += StateHasChanged;
         GeneticAlgo.StartGeneticAlgo(Target);
